@@ -229,6 +229,89 @@ def company_critical_inventory(ctx: UserContext = Depends(require_company)):
     return [p for p in products if p["stock_quantity"] <= p["critical_threshold"]]
 
 
+class CompanyProductCreate(BaseModel):
+    name: str
+    category: str
+    stock_quantity: int = 0
+    critical_threshold: int = 10
+    unit_price: float
+
+
+class CompanyProductUpdate(BaseModel):
+    name: Optional[str] = None
+    category: Optional[str] = None
+    stock_quantity: Optional[int] = None
+    critical_threshold: Optional[int] = None
+    unit_price: Optional[float] = None
+
+
+@router.post("/inventory")
+def create_company_product(body: CompanyProductCreate, ctx: UserContext = Depends(require_company)):
+    db = get_db()
+    tid = ctx.tenant_id
+    row = {
+        "tenant_id": tid,
+        "name": body.name,
+        "category": body.category,
+        "stock_quantity": body.stock_quantity,
+        "critical_threshold": body.critical_threshold,
+        "unit_price": body.unit_price,
+    }
+    result = db.table("products").insert(row).execute()
+    if not result.data:
+        raise HTTPException(status_code=500, detail="Failed to create product")
+    product = result.data[0]
+    db.table("activity_logs").insert({
+        "tenant_id": tid,
+        "actor_id": ctx.user_id,
+        "action_type": "product_created",
+        "description": f"Product {product['name']} created.",
+    }).execute()
+    return product
+
+
+@router.put("/inventory/{product_id}")
+def update_company_product(product_id: str, body: CompanyProductUpdate, ctx: UserContext = Depends(require_company)):
+    db = get_db()
+    tid = ctx.tenant_id
+    existing = db.table("products").select("id,name").eq("id", product_id).eq("tenant_id", tid).execute().data
+    if not existing:
+        raise HTTPException(status_code=404, detail="Product not found")
+    updates = {k: v for k, v in body.dict().items() if v is not None}
+    if not updates:
+        return existing[0]
+    result = db.table("products").update(updates).eq("id", product_id).execute()
+    product = result.data[0] if result.data else {}
+    db.table("activity_logs").insert({
+        "tenant_id": tid,
+        "actor_id": ctx.user_id,
+        "action_type": "product_updated",
+        "description": f"Product {existing[0]['name']} updated.",
+    }).execute()
+    return product
+
+
+@router.delete("/inventory/{product_id}")
+def delete_company_product(product_id: str, ctx: UserContext = Depends(require_company)):
+    db = get_db()
+    tid = ctx.tenant_id
+    existing = db.table("products").select("id,name").eq("id", product_id).eq("tenant_id", tid).execute().data
+    if not existing:
+        raise HTTPException(status_code=404, detail="Product not found")
+    name = existing[0]["name"]
+    # Block delete if product is referenced by order items.
+    refs = db.table("order_items").select("id").eq("product_id", product_id).limit(1).execute().data
+    if refs:
+        raise HTTPException(status_code=409, detail="Product is referenced by existing orders")
+    db.table("products").delete().eq("id", product_id).execute()
+    db.table("activity_logs").insert({
+        "tenant_id": tid,
+        "actor_id": ctx.user_id,
+        "action_type": "product_deleted",
+        "description": f"Product {name} deleted.",
+    }).execute()
+
+
 @router.get("/shipments/delayed")
 def company_delayed_shipments(ctx: UserContext = Depends(require_company)):
     db = get_db()

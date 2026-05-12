@@ -2,7 +2,8 @@
 
 import { useApp } from '@/lib/context'
 import { useRouter } from 'next/navigation'
-import { LogOut, Zap, Moon, Sun, Languages } from 'lucide-react'
+import { LogOut, Moon, Sun, Languages } from 'lucide-react'
+import Logo from './Logo'
 
 export default function Navbar() {
   const { activeUser, setActiveUser, theme, toggleTheme, lang, toggleLang, T } = useApp()
@@ -10,15 +11,12 @@ export default function Navbar() {
 
   const handleLogout = () => {
     setActiveUser(null)
-    router.push('/')
+    router.push('/login')
   }
 
   return (
-    <nav className="bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-700 px-6 py-3 flex items-center justify-between shadow-sm">
-      <div className="flex items-center gap-2">
-        <Zap className="w-6 h-6 text-blue-500" />
-        <span className="text-xl font-bold text-gray-900 dark:text-white">Koopilot</span>
-      </div>
+    <nav className="bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-700 px-4 sm:px-6 py-3 flex items-center justify-between shadow-sm">
+      <Logo size={32} showWordmark wordmarkClassName="text-lg sm:text-xl" />
 
       <div className="flex items-center gap-2">
         {/* Language toggle */}
@@ -42,14 +40,14 @@ export default function Navbar() {
 
         {activeUser && (
           <>
-            <div className="text-right ml-2">
+            <div className="hidden sm:block text-right ml-2">
               <p className="text-sm font-medium text-gray-900 dark:text-white">{activeUser.label}</p>
               <p className="text-xs text-gray-400 capitalize">{activeUser.role}</p>
             </div>
             <button
               onClick={handleLogout}
               className="p-2 text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition"
-              title={T.switchUser}
+              title={T.logOut}
             >
               <LogOut className="w-4 h-4" />
             </button>

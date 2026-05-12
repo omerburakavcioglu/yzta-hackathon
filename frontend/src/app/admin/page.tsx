@@ -18,8 +18,8 @@ export default function AdminPage() {
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
-    if (!activeUser) { router.push('/'); return }
-    if (activeUser.role !== 'admin') { router.push('/'); return }
+    if (!activeUser) { router.push('/login'); return }
+    if (activeUser.role !== 'admin') { router.push('/login'); return }
 
     Promise.all([
       api.getAdminSummary(activeUser),

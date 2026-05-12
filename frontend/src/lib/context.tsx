@@ -6,7 +6,7 @@ import t, { Lang, Translations } from './translations'
 
 interface AppContextType {
   activeUser: DemoUser | null
-  setActiveUser: (user: DemoUser | null) => void
+  setActiveUser: (user: DemoUser | null, remember?: boolean) => void
   theme: 'light' | 'dark'
   toggleTheme: () => void
   lang: Lang
@@ -24,13 +24,19 @@ const AppContext = createContext<AppContextType>({
   T: t.en,
 })
 
+const USER_KEY = 'koopilot_user'
+
 export function AppProvider({ children }: { children: ReactNode }) {
   const [activeUser, setActiveUserState] = useState<DemoUser | null>(null)
   const [theme, setTheme] = useState<'light' | 'dark'>('light')
   const [lang, setLang] = useState<Lang>('en')
 
   useEffect(() => {
-    const stored = localStorage.getItem('koopilot_user')
+    // Prefer persistent ("remember me") over session-only entries.
+    const stored =
+      (typeof window !== 'undefined' &&
+        (localStorage.getItem(USER_KEY) || sessionStorage.getItem(USER_KEY))) ||
+      null
     const storedTheme = localStorage.getItem('koopilot_theme') as 'light' | 'dark' | null
     const storedLang = localStorage.getItem('koopilot_lang') as Lang | null
 
@@ -53,10 +59,22 @@ export function AppProvider({ children }: { children: ReactNode }) {
     localStorage.setItem('koopilot_lang', lang)
   }, [lang])
 
-  const setActiveUser = (user: DemoUser | null) => {
+  const setActiveUser = (user: DemoUser | null, remember: boolean = true) => {
     setActiveUserState(user)
-    if (user) localStorage.setItem('koopilot_user', JSON.stringify(user))
-    else localStorage.removeItem('koopilot_user')
+    if (typeof window === 'undefined') return
+    if (user) {
+      const serialized = JSON.stringify(user)
+      if (remember) {
+        localStorage.setItem(USER_KEY, serialized)
+        sessionStorage.removeItem(USER_KEY)
+      } else {
+        sessionStorage.setItem(USER_KEY, serialized)
+        localStorage.removeItem(USER_KEY)
+      }
+    } else {
+      localStorage.removeItem(USER_KEY)
+      sessionStorage.removeItem(USER_KEY)
+    }
   }
 
   const toggleTheme = () => setTheme(prev => prev === 'light' ? 'dark' : 'light')

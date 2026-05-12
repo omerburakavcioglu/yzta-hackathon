@@ -77,8 +77,8 @@ export default function AdminOrdersPage() {
   }, [activeUser, filterTenant, filterStatus])
 
   useEffect(() => {
-    if (!activeUser) { router.push('/'); return }
-    if (activeUser.role !== 'admin') { router.push('/'); return }
+    if (!activeUser) { router.push('/login'); return }
+    if (activeUser.role !== 'admin') { router.push('/login'); return }
 
     api.getAdminOrdersMeta(activeUser).then(({ tenants, customers }) => {
       setTenants(tenants)

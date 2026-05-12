@@ -38,7 +38,7 @@ export default function MonthlyReportPage() {
 
     useEffect(() => {
         if (!activeUser) {
-            router.push('/')
+            router.push('/login')
             return
         }
 

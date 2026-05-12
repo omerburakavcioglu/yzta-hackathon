@@ -19,8 +19,8 @@ export default function CustomerPage() {
   const [orderDetails, setOrderDetails] = useState<Record<string, any>>({})
 
   useEffect(() => {
-    if (!activeUser) { router.push('/'); return }
-    if (activeUser.role !== 'customer') { router.push('/'); return }
+    if (!activeUser) { router.push('/login'); return }
+    if (activeUser.role !== 'customer') { router.push('/login'); return }
 
     api.getCustomerOrders(activeUser as any)
       .then((data: any) => setOrders(data))

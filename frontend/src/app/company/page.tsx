@@ -24,6 +24,14 @@ const EMPTY_FORM = {
   order_date: new Date().toISOString().slice(0, 10),
 }
 
+const EMPTY_PRODUCT_FORM = {
+  name: '',
+  category: '',
+  stock_quantity: 0,
+  critical_threshold: 10,
+  unit_price: 0,
+}
+
 export default function CompanyPage() {
   const { activeUser, lang, T } = useApp()
   const router = useRouter()
@@ -48,6 +56,16 @@ export default function CompanyPage() {
   const [deleting, setDeleting] = useState(false)
   const [toast, setToast] = useState<{ msg: string; type: 'success' | 'error' } | null>(null)
 
+  // Inventory CRUD state
+  const [products, setProducts] = useState<any[]>([])
+  const [productsLoading, setProductsLoading] = useState(false)
+  const [productModalOpen, setProductModalOpen] = useState(false)
+  const [editingProductId, setEditingProductId] = useState<string | null>(null)
+  const [productForm, setProductForm] = useState({ ...EMPTY_PRODUCT_FORM })
+  const [productSaving, setProductSaving] = useState(false)
+  const [productDeleteTarget, setProductDeleteTarget] = useState<any | null>(null)
+  const [productDeleting, setProductDeleting] = useState(false)
+
   const showToast = (msg: string, type: 'success' | 'error' = 'success') => {
     setToast({ msg, type })
     setTimeout(() => setToast(null), 3000)
@@ -65,8 +83,8 @@ export default function CompanyPage() {
   }, [activeUser])
 
   useEffect(() => {
-    if (!activeUser) { router.push('/'); return }
-    if (activeUser.role !== 'company') { router.push('/'); return }
+    if (!activeUser) { router.push('/login'); return }
+    if (activeUser.role !== 'company') { router.push('/login'); return }
 
     Promise.all([
       api.getCompanyDashboard(activeUser),
@@ -74,14 +92,92 @@ export default function CompanyPage() {
       api.getCompanyOrders(activeUser),
       api.getCompanyCustomers(activeUser),
       api.getCompanyMonthlyReports(activeUser),
-    ]).then(([d, f, o, c, mr]: any) => {
+      api.getCompanyInventory(activeUser),
+    ]).then(([d, f, o, c, mr, p]: any) => {
       setDashboard(d)
       setForecast(f)
       setOrders(o)
       setCustomers(c)
       setMonthlyReports(mr)
+      setProducts(p)
     }).finally(() => setLoading(false))
   }, [activeUser])
+
+  const fetchProducts = useCallback(async () => {
+    if (!activeUser) return
+    setProductsLoading(true)
+    try {
+      const data = await api.getCompanyInventory(activeUser)
+      setProducts(data)
+    } finally {
+      setProductsLoading(false)
+    }
+  }, [activeUser])
+
+  const openAddProduct = () => {
+    setEditingProductId(null)
+    setProductForm({ ...EMPTY_PRODUCT_FORM })
+    setProductModalOpen(true)
+  }
+
+  const openEditProduct = (product: any) => {
+    setEditingProductId(product.id)
+    setProductForm({
+      name: product.name,
+      category: product.category,
+      stock_quantity: product.stock_quantity,
+      critical_threshold: product.critical_threshold,
+      unit_price: Number(product.unit_price),
+    })
+    setProductModalOpen(true)
+  }
+
+  const closeProductModal = () => {
+    setProductModalOpen(false)
+    setEditingProductId(null)
+    setProductForm({ ...EMPTY_PRODUCT_FORM })
+  }
+
+  const setProductField = (field: string, value: string | number) => {
+    setProductForm(prev => ({ ...prev, [field]: value }))
+  }
+
+  const handleSaveProduct = async () => {
+    if (!activeUser) return
+    if (!productForm.name.trim() || !productForm.category.trim()) return
+    setProductSaving(true)
+    try {
+      if (editingProductId) {
+        await api.updateCompanyProduct(activeUser, editingProductId, productForm)
+        showToast(T.productUpdated)
+      } else {
+        await api.createCompanyProduct(activeUser, productForm)
+        showToast(T.productCreated)
+      }
+      closeProductModal()
+      fetchProducts()
+    } catch {
+      showToast(T.errorOccurred, 'error')
+    } finally {
+      setProductSaving(false)
+    }
+  }
+
+  const handleDeleteProduct = async () => {
+    if (!activeUser || !productDeleteTarget) return
+    setProductDeleting(true)
+    try {
+      await api.deleteCompanyProduct(activeUser, productDeleteTarget.id)
+      showToast(T.productDeleted)
+      setProductDeleteTarget(null)
+      fetchProducts()
+    } catch (e: any) {
+      const msg = String(e?.message ?? '')
+      showToast(msg.includes('409') ? T.cannotDeleteReferenced : T.errorOccurred, 'error')
+    } finally {
+      setProductDeleting(false)
+    }
+  }
 
   const loadSummary = async () => {
     if (!activeUser) return
@@ -344,36 +440,87 @@ export default function CompanyPage() {
                   )}
 
                   {activeTab === 'inventory' && (
-                    <div className="overflow-x-auto">
-                      <table className="w-full text-sm">
-                        <thead className="bg-gray-50 dark:bg-gray-700/50">
-                          <tr>
-                            {[T.product, T.category, T.stock, T.threshold, T.status, T.price].map(h => (
-                              <th key={h} className="px-4 py-3 text-left font-medium text-gray-500 dark:text-gray-400">{h}</th>
-                            ))}
-                          </tr>
-                        </thead>
-                        <tbody className="divide-y divide-gray-100 dark:divide-gray-700">
-                          {(dashboard?.critical_products ?? []).map((p: any) => (
-                            <tr key={p.id} className="hover:bg-red-50 dark:hover:bg-red-900/10 bg-red-50/50 dark:bg-red-900/10">
-                              <td className="px-4 py-3 font-medium text-gray-900 dark:text-white">{p.name}</td>
-                              <td className="px-4 py-3 text-gray-500 dark:text-gray-400">{p.category}</td>
-                              <td className="px-4 py-3 font-bold text-red-600 dark:text-red-400">{p.stock_quantity}</td>
-                              <td className="px-4 py-3 text-gray-400 dark:text-gray-500">{p.critical_threshold}</td>
-                              <td className="px-4 py-3">
-                                <span className="text-xs font-semibold text-red-600 dark:text-red-400 bg-red-100 dark:bg-red-900/40 px-2 py-0.5 rounded-full">
-                                  {T.critical}
-                                </span>
-                              </td>
-                              <td className="px-4 py-3 text-gray-700 dark:text-gray-300">₺{Number(p.unit_price).toFixed(2)}</td>
-                            </tr>
-                          ))}
-                        </tbody>
-                      </table>
-                      {(dashboard?.critical_products ?? []).length === 0 && (
-                        <div className="text-center text-green-600 dark:text-green-400 py-8 text-sm">{T.allAboveThreshold}</div>
-                      )}
-                    </div>
+                    <>
+                      <div className="px-4 py-3 border-b border-gray-100 dark:border-gray-700 flex items-center justify-between">
+                        <span className="text-xs text-gray-400 dark:text-gray-500">
+                          {products.length} {lang === 'tr' ? 'ürün' : 'products'}
+                        </span>
+                        <button
+                          onClick={openAddProduct}
+                          className="flex items-center gap-1.5 text-sm bg-blue-500 hover:bg-blue-600 text-white px-3 py-1.5 rounded-lg font-medium transition"
+                        >
+                          <Plus className="w-4 h-4" />
+                          {T.addProduct}
+                        </button>
+                      </div>
+                      <div className="overflow-x-auto">
+                        {productsLoading ? (
+                          <div className="text-center text-gray-400 py-10 text-sm">{T.loading}</div>
+                        ) : products.length === 0 ? (
+                          <div className="text-center text-gray-400 dark:text-gray-500 py-10 text-sm">{T.noProducts}</div>
+                        ) : (
+                          <table className="w-full text-sm">
+                            <thead className="bg-gray-50 dark:bg-gray-700/50">
+                              <tr>
+                                {[T.product, T.category, T.stock, T.threshold, T.status, T.price, T.actions].map(h => (
+                                  <th key={h} className="px-4 py-3 text-left font-medium text-gray-500 dark:text-gray-400 whitespace-nowrap">{h}</th>
+                                ))}
+                              </tr>
+                            </thead>
+                            <tbody className="divide-y divide-gray-100 dark:divide-gray-700">
+                              {products.map((p: any) => {
+                                const isCritical = p.stock_quantity <= p.critical_threshold
+                                return (
+                                  <tr
+                                    key={p.id}
+                                    className={isCritical
+                                      ? 'bg-red-50/50 dark:bg-red-900/10 hover:bg-red-50 dark:hover:bg-red-900/20'
+                                      : 'hover:bg-gray-50 dark:hover:bg-gray-700/40'}
+                                  >
+                                    <td className="px-4 py-3 font-medium text-gray-900 dark:text-white">{p.name}</td>
+                                    <td className="px-4 py-3 text-gray-500 dark:text-gray-400">{p.category}</td>
+                                    <td className={`px-4 py-3 font-bold ${isCritical ? 'text-red-600 dark:text-red-400' : 'text-gray-900 dark:text-white'}`}>
+                                      {p.stock_quantity}
+                                    </td>
+                                    <td className="px-4 py-3 text-gray-400 dark:text-gray-500">{p.critical_threshold}</td>
+                                    <td className="px-4 py-3">
+                                      {isCritical ? (
+                                        <span className="text-xs font-semibold text-red-600 dark:text-red-400 bg-red-100 dark:bg-red-900/40 px-2 py-0.5 rounded-full">
+                                          {T.critical}
+                                        </span>
+                                      ) : (
+                                        <span className="text-xs font-semibold text-green-600 dark:text-green-400 bg-green-100 dark:bg-green-900/40 px-2 py-0.5 rounded-full">
+                                          OK
+                                        </span>
+                                      )}
+                                    </td>
+                                    <td className="px-4 py-3 text-gray-700 dark:text-gray-300">₺{Number(p.unit_price).toFixed(2)}</td>
+                                    <td className="px-4 py-3">
+                                      <div className="flex items-center gap-1">
+                                        <button
+                                          onClick={() => openEditProduct(p)}
+                                          className="p-1.5 text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 hover:bg-blue-50 dark:hover:bg-blue-900/30 rounded-lg transition"
+                                          title={T.editProduct}
+                                        >
+                                          <Pencil className="w-3.5 h-3.5" />
+                                        </button>
+                                        <button
+                                          onClick={() => setProductDeleteTarget(p)}
+                                          className="p-1.5 text-gray-400 hover:text-red-600 dark:hover:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/30 rounded-lg transition"
+                                          title={T.deleteProduct}
+                                        >
+                                          <Trash2 className="w-3.5 h-3.5" />
+                                        </button>
+                                      </div>
+                                    </td>
+                                  </tr>
+                                )
+                              })}
+                            </tbody>
+                          </table>
+                        )}
+                      </div>
+                    </>
                   )}
 
                   {activeTab === 'forecast' && (
@@ -541,6 +688,129 @@ export default function CompanyPage() {
                 className="px-5 py-2 text-sm font-medium bg-blue-500 hover:bg-blue-600 text-white rounded-lg transition disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 {saving ? T.saving : T.saveOrder}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* ── Product Add / Edit Modal ───────────────────────── */}
+      {productModalOpen && (
+        <div className="fixed inset-0 z-40 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
+          <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-2xl w-full max-w-lg border border-gray-200 dark:border-gray-700">
+            <div className="flex items-center justify-between px-6 py-4 border-b border-gray-100 dark:border-gray-700">
+              <h2 className="text-lg font-semibold text-gray-900 dark:text-white">
+                {editingProductId ? T.editProduct : T.newProduct}
+              </h2>
+              <button onClick={closeProductModal} className="p-1.5 text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition">
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            <div className="px-6 py-5 space-y-4">
+              <div>
+                <label className="block text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide mb-1.5">{T.productName}</label>
+                <input
+                  type="text"
+                  value={productForm.name}
+                  onChange={e => setProductField('name', e.target.value)}
+                  className="w-full border border-gray-200 dark:border-gray-600 rounded-lg px-3 py-2.5 text-sm bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-300"
+                />
+              </div>
+
+              <div>
+                <label className="block text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide mb-1.5">{T.category}</label>
+                <input
+                  type="text"
+                  value={productForm.category}
+                  onChange={e => setProductField('category', e.target.value)}
+                  className="w-full border border-gray-200 dark:border-gray-600 rounded-lg px-3 py-2.5 text-sm bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-300"
+                />
+              </div>
+
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide mb-1.5">{T.stock}</label>
+                  <input
+                    type="number"
+                    min={0}
+                    step={1}
+                    value={productForm.stock_quantity}
+                    onChange={e => setProductField('stock_quantity', parseInt(e.target.value) || 0)}
+                    className="w-full border border-gray-200 dark:border-gray-600 rounded-lg px-3 py-2.5 text-sm bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-300"
+                  />
+                </div>
+                <div>
+                  <label className="block text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide mb-1.5">{T.threshold}</label>
+                  <input
+                    type="number"
+                    min={0}
+                    step={1}
+                    value={productForm.critical_threshold}
+                    onChange={e => setProductField('critical_threshold', parseInt(e.target.value) || 0)}
+                    className="w-full border border-gray-200 dark:border-gray-600 rounded-lg px-3 py-2.5 text-sm bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-300"
+                  />
+                </div>
+              </div>
+
+              <div>
+                <label className="block text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wide mb-1.5">{T.price} (₺)</label>
+                <input
+                  type="number"
+                  min={0}
+                  step={0.01}
+                  value={productForm.unit_price}
+                  onChange={e => setProductField('unit_price', parseFloat(e.target.value) || 0)}
+                  className="w-full border border-gray-200 dark:border-gray-600 rounded-lg px-3 py-2.5 text-sm bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-blue-300"
+                />
+              </div>
+            </div>
+
+            <div className="flex justify-end gap-3 px-6 py-4 border-t border-gray-100 dark:border-gray-700">
+              <button
+                onClick={closeProductModal}
+                className="px-4 py-2 text-sm font-medium text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition"
+              >
+                {T.cancel}
+              </button>
+              <button
+                onClick={handleSaveProduct}
+                disabled={productSaving || !productForm.name.trim() || !productForm.category.trim()}
+                className="px-5 py-2 text-sm font-medium bg-blue-500 hover:bg-blue-600 text-white rounded-lg transition disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                {productSaving ? T.saving : T.saveOrder}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* ── Product Delete Confirmation ─────────────────────── */}
+      {productDeleteTarget && (
+        <div className="fixed inset-0 z-40 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm">
+          <div className="bg-white dark:bg-gray-800 rounded-2xl shadow-2xl w-full max-w-sm border border-gray-200 dark:border-gray-700 p-6">
+            <div className="flex items-center gap-3 mb-4">
+              <div className="bg-red-100 dark:bg-red-900/30 p-2 rounded-full">
+                <Trash2 className="w-5 h-5 text-red-600 dark:text-red-400" />
+              </div>
+              <h2 className="text-lg font-semibold text-gray-900 dark:text-white">{T.deleteProduct}</h2>
+            </div>
+            <p className="text-sm text-gray-600 dark:text-gray-400 mb-6">
+              {T.confirmDeleteProduct} <span className="font-semibold text-gray-900 dark:text-white">{productDeleteTarget.name}</span>?
+            </p>
+            <div className="flex justify-end gap-3">
+              <button
+                onClick={() => setProductDeleteTarget(null)}
+                className="px-4 py-2 text-sm font-medium text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition"
+              >
+                {T.cancel}
+              </button>
+              <button
+                onClick={handleDeleteProduct}
+                disabled={productDeleting}
+                className="px-5 py-2 text-sm font-medium bg-red-500 hover:bg-red-600 text-white rounded-lg transition disabled:opacity-50"
+              >
+                {productDeleting ? T.saving : T.deleteProduct}
               </button>
             </div>
           </div>

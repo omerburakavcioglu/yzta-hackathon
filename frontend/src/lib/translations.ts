@@ -125,7 +125,6 @@ const t = {
     filterByCompany: 'Filter by company',
     filterByStatus: 'Filter by status',
     noOrdersFound: 'No orders found. Click "Add Order" to create the first one.',
-    company: 'Company',
     orderNoLabel: 'Order No',
     orderDate: 'Order Date',
     totalAmount: 'Total Amount',
@@ -137,6 +136,35 @@ const t = {
     orderCreated: 'Order created successfully.',
     orderDeleted: 'Order deleted successfully.',
     errorOccurred: 'An error occurred. Please try again.',
+
+    // Login page
+    loginTitle: 'Welcome back',
+    loginSubtitle: 'Sign in to your Koopilot workspace',
+    usernameLabel: 'Username',
+    usernamePlaceholder: 'Enter your username',
+    passwordLabel: 'Password',
+    passwordPlaceholder: 'Enter your password',
+    rememberMe: 'Remember me',
+    forgotPassword: 'Forgot password?',
+    forgotPasswordMessage: 'Password reset is not available in demo mode.',
+    signIn: 'Sign in',
+    signingIn: 'Signing in…',
+    invalidCredentials: 'Invalid username or password.',
+    logOut: 'Log out',
+    demoHint: 'Demo credentials — try admin / ege / aura / ayse / elif (password: deneme123)',
+
+    // Inventory management
+    addProduct: 'Add Product',
+    editProduct: 'Edit Product',
+    newProduct: 'New Product',
+    deleteProduct: 'Delete',
+    productName: 'Product Name',
+    confirmDeleteProduct: 'Are you sure you want to delete product',
+    noProducts: 'No products yet. Click "Add Product" to create the first one.',
+    productCreated: 'Product created successfully.',
+    productUpdated: 'Product updated successfully.',
+    productDeleted: 'Product deleted successfully.',
+    cannotDeleteReferenced: 'This product is used in orders and cannot be deleted.',
   },
   tr: {
     // Common
@@ -262,7 +290,6 @@ const t = {
     filterByCompany: 'Şirkete göre filtrele',
     filterByStatus: 'Duruma göre filtrele',
     noOrdersFound: 'Sipariş bulunamadı. "Sipariş Ekle" ile yeni sipariş oluşturun.',
-    company: 'Şirket',
     orderNoLabel: 'Sipariş No',
     orderDate: 'Sipariş Tarihi',
     totalAmount: 'Toplam Tutar',
@@ -274,8 +301,37 @@ const t = {
     orderCreated: 'Sipariş başarıyla oluşturuldu.',
     orderDeleted: 'Sipariş başarıyla silindi.',
     errorOccurred: 'Bir hata oluştu. Lütfen tekrar deneyin.',
+
+    // Login page
+    loginTitle: 'Tekrar hoş geldiniz',
+    loginSubtitle: 'Koopilot çalışma alanınıza giriş yapın',
+    usernameLabel: 'Kullanıcı adı',
+    usernamePlaceholder: 'Kullanıcı adınızı girin',
+    passwordLabel: 'Şifre',
+    passwordPlaceholder: 'Şifrenizi girin',
+    rememberMe: 'Beni hatırla',
+    forgotPassword: 'Şifrenizi mi unuttunuz?',
+    forgotPasswordMessage: 'Demo modunda şifre sıfırlama kullanılamaz.',
+    signIn: 'Giriş yap',
+    signingIn: 'Giriş yapılıyor…',
+    invalidCredentials: 'Geçersiz kullanıcı adı veya şifre.',
+    logOut: 'Çıkış yap',
+    demoHint: 'Demo kullanıcılar — admin / ege / aura / ayse / elif (şifre: deneme123)',
+
+    // Inventory management
+    addProduct: 'Ürün Ekle',
+    editProduct: 'Ürünü Düzenle',
+    newProduct: 'Yeni Ürün',
+    deleteProduct: 'Sil',
+    productName: 'Ürün Adı',
+    confirmDeleteProduct: 'Bu ürünü silmek istediğinize emin misiniz:',
+    noProducts: 'Henüz ürün yok. İlk ürünü eklemek için "Ürün Ekle" butonuna tıklayın.',
+    productCreated: 'Ürün başarıyla oluşturuldu.',
+    productUpdated: 'Ürün başarıyla güncellendi.',
+    productDeleted: 'Ürün başarıyla silindi.',
+    cannotDeleteReferenced: 'Bu ürün siparişlerde kullanıldığı için silinemez.',
   },
-} as const
+}
 
 export type Translations = typeof t.en
 export default t

@@ -62,6 +62,14 @@ export interface OrderPayload {
   order_date: string
 }
 
+export interface ProductPayload {
+  name: string
+  category: string
+  stock_quantity: number
+  critical_threshold: number
+  unit_price: number
+}
+
 export const api = {
   getDemoUsers: (): Promise<DemoUser[]> =>
     fetch(`${BASE_URL}/demo-users`).then(r => r.json()),
@@ -100,7 +108,13 @@ export const api = {
     put<any>(`/company/orders/${orderId}`, body, u),
   deleteCompanyOrder: (u: DemoUser, orderId: string) =>
     del(`/company/orders/${orderId}`, u),
-  getCompanyInventory: (u: DemoUser) => get('/company/inventory', u),
+  getCompanyInventory: (u: DemoUser) => get<any[]>('/company/inventory', u),
+  createCompanyProduct: (u: DemoUser, body: ProductPayload) =>
+    post<any>('/company/inventory', body, u),
+  updateCompanyProduct: (u: DemoUser, productId: string, body: Partial<ProductPayload>) =>
+    put<any>(`/company/inventory/${productId}`, body, u),
+  deleteCompanyProduct: (u: DemoUser, productId: string) =>
+    del(`/company/inventory/${productId}`, u),
   getCompanyCriticalInventory: (u: DemoUser) => get('/company/inventory/critical', u),
   getCompanyDelayedShipments: (u: DemoUser) => get('/company/shipments/delayed', u),
   getCompanyForecast: (u: DemoUser) => get('/company/forecast', u),

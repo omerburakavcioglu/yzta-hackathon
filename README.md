@@ -240,7 +240,7 @@ A second demo tenant, **Aura Candle Studio** (handmade scented candles), is incl
 
 ```
 koopilot/
-├── backend/                FastAPI service (Python 3.11)
+├── backend/                FastAPI services (Python 3.11)
 │   └── app/
 │       ├── routers/        admin / company / customer / storefront / demo
 │       ├── services/       ai_service.py, forecast_service.py

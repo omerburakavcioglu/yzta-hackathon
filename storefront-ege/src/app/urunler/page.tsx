@@ -7,12 +7,14 @@ import ProductCard from '@/components/ProductCard'
 export default function ProductsPage() {
   const [products, setProducts] = useState<Product[]>([])
   const [loading, setLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
   const [category, setCategory] = useState<string>('all')
   const [sort, setSort] = useState<'name' | 'price-asc' | 'price-desc'>('name')
 
   useEffect(() => {
     api.products()
       .then(setProducts)
+      .catch(e => setError(e?.message || 'Ürünler yüklenemedi'))
       .finally(() => setLoading(false))
   }, [])
 
@@ -79,6 +81,11 @@ export default function ProductsPage() {
 
       {loading ? (
         <div className="text-center text-ink-400 py-20">Yükleniyor...</div>
+      ) : error ? (
+        <div className="text-center py-20">
+          <div className="text-red-700 font-medium mb-1">Ürünler yüklenemedi</div>
+          <div className="text-sm text-ink-500">{error}</div>
+        </div>
       ) : filtered.length === 0 ? (
         <div className="text-center text-ink-400 py-20">Bu kategoride ürün yok.</div>
       ) : (

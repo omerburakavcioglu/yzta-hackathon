@@ -8,7 +8,7 @@
 
 _Turn a day of WhatsApp messages, scattered spreadsheets and "where is my order?" calls into a single, AI-assisted operations workspace._
 
-[Live company dashboard](https://koopilot.site) · [Live consumer storefront](https://storefront-ege.vercel.app) · [API](https://yzta-hackathon-ee2z.onrender.com/docs)
+[Live company dashboard](https://koopilot.site) · [Live consumer storefront](https://ege.koopilot.site) · [API](https://yzta-hackathon-ee2z.onrender.com/docs)
 
 </div>
 
@@ -37,7 +37,7 @@ Koopilot is a multi-tenant operations platform that combines three things into o
 2. **A self-service experience for the end customer** — a branded storefront with an AI assistant that can answer "where is my order?" without a human in the loop.
 3. **A platform layer for partners and operators** — multi-tenant by design, so each cooperative or SMB gets its own isolated workspace, customers and analytics.
 
-The end-customer experience is shipped as a **fully branded storefront**, so a cooperative does not have to build its own website to benefit from the platform. The first reference deployment is **Ege Zeytincilik Kooperatifi**, a regional olive-oil cooperative — its consumer site is live at [storefront-ege.vercel.app](https://storefront-ege.vercel.app).
+The end-customer experience is shipped as a **fully branded storefront**, so a cooperative does not have to build its own website to benefit from the platform. The first reference deployment is **Ege Zeytincilik Kooperatifi**, a regional olive-oil cooperative — its consumer site is live at [ege.koopilot.site](https://ege.koopilot.site).
 
 ## 3. Who it is for
 
@@ -219,7 +219,7 @@ The first live tenant is a regional olive-oil cooperative based in the Aegean.
 
 The cooperative gets:
 
-- A fully branded consumer storefront at [storefront-ege.vercel.app](https://storefront-ege.vercel.app) with its own logo, palette and product catalog.
+- A fully branded consumer storefront at [ege.koopilot.site](https://ege.koopilot.site) with its own logo, palette and product catalog.
 - An always-on customer chat assistant that can answer order-status and product questions in Turkish.
 - An operations workspace inside Koopilot itself for stock, orders, shipments and the AI daily brief.
 

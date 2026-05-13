@@ -1,0 +1,545 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Koopilot — Demo Erişim Kılavuzu</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      background: #F0F4FF;
+      color: #1e293b;
+      min-height: 100vh;
+      padding: 40px 20px 80px;
+    }
+
+    .page {
+      max-width: 760px;
+      margin: 0 auto;
+    }
+
+    /* ── Header ── */
+    .hero {
+      background: linear-gradient(135deg, #2563EB 0%, #4F46E5 55%, #0EA5E9 100%);
+      border-radius: 20px;
+      padding: 48px 40px 40px;
+      color: white;
+      margin-bottom: 32px;
+      position: relative;
+      overflow: hidden;
+    }
+    .hero::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Ccircle cx='30' cy='30' r='1.5' fill='white' fill-opacity='0.07'/%3E%3C/g%3E%3C/svg%3E");
+      pointer-events: none;
+    }
+    .hero-top {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      margin-bottom: 20px;
+    }
+    .hero h1 {
+      font-size: 32px;
+      font-weight: 700;
+      letter-spacing: -0.5px;
+    }
+    .hero p {
+      font-size: 15px;
+      color: rgba(255,255,255,0.82);
+      max-width: 520px;
+      line-height: 1.6;
+    }
+    .badge {
+      display: inline-block;
+      background: rgba(255,255,255,0.18);
+      border: 1px solid rgba(255,255,255,0.3);
+      border-radius: 999px;
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      padding: 3px 10px;
+      margin-bottom: 10px;
+    }
+
+    /* ── Section cards ── */
+    .section {
+      background: white;
+      border-radius: 16px;
+      border: 1px solid #e2e8f0;
+      padding: 32px 36px;
+      margin-bottom: 24px;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.05);
+    }
+
+    .section-header {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      margin-bottom: 24px;
+      padding-bottom: 20px;
+      border-bottom: 1px solid #f1f5f9;
+    }
+    .section-header h2 {
+      font-size: 20px;
+      font-weight: 700;
+      color: #0f172a;
+    }
+    .section-header .sub {
+      font-size: 12px;
+      color: #64748b;
+      margin-top: 2px;
+    }
+
+    /* ── URL bar ── */
+    .url-bar {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      background: #F8FAFF;
+      border: 1.5px solid #c7d2fe;
+      border-radius: 10px;
+      padding: 10px 14px;
+      margin-bottom: 24px;
+    }
+    .url-bar .dot { width: 10px; height: 10px; border-radius: 50%; background: #a5b4fc; flex-shrink: 0; }
+    .url-bar a {
+      font-size: 14px;
+      font-weight: 600;
+      color: #4338ca;
+      text-decoration: none;
+      word-break: break-all;
+    }
+    .url-bar a:hover { text-decoration: underline; }
+    .url-label { font-size: 11px; color: #94a3b8; text-transform: uppercase; letter-spacing: 0.06em; margin-left: auto; flex-shrink: 0; }
+
+    /* ── Credential rows ── */
+    .cred-table { width: 100%; border-collapse: collapse; margin-bottom: 4px; }
+    .cred-table th {
+      text-align: left;
+      font-size: 11px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.07em;
+      color: #94a3b8;
+      padding: 0 0 8px 0;
+    }
+    .cred-table td {
+      padding: 10px 0;
+      font-size: 14px;
+      border-top: 1px solid #f1f5f9;
+      vertical-align: middle;
+    }
+    .cred-table td:first-child { width: 32%; color: #475569; font-weight: 500; }
+    .pill {
+      display: inline-block;
+      font-family: 'SF Mono', 'Fira Code', monospace;
+      font-size: 13px;
+      background: #f8fafc;
+      border: 1px solid #e2e8f0;
+      border-radius: 6px;
+      padding: 3px 10px;
+      color: #1e293b;
+    }
+    .role-tag {
+      display: inline-block;
+      font-size: 11px;
+      font-weight: 600;
+      border-radius: 999px;
+      padding: 2px 9px;
+      margin-left: 8px;
+      vertical-align: middle;
+    }
+    .role-admin { background: #fef3c7; color: #92400e; }
+    .role-owner { background: #dbeafe; color: #1e40af; }
+    .role-guest { background: #f0fdf4; color: #166534; }
+
+    /* ── Info box ── */
+    .info-box {
+      display: flex;
+      gap: 10px;
+      background: #fffbeb;
+      border: 1px solid #fde68a;
+      border-radius: 10px;
+      padding: 12px 14px;
+      margin-top: 20px;
+    }
+    .info-box .icon { font-size: 16px; flex-shrink: 0; margin-top: 1px; }
+    .info-box p { font-size: 13px; color: #78350f; line-height: 1.5; }
+
+    .note-box {
+      display: flex;
+      gap: 10px;
+      background: #f0f9ff;
+      border: 1px solid #bae6fd;
+      border-radius: 10px;
+      padding: 12px 14px;
+      margin-top: 16px;
+    }
+    .note-box .icon { font-size: 16px; flex-shrink: 0; margin-top: 1px; }
+    .note-box p { font-size: 13px; color: #0c4a6e; line-height: 1.5; }
+
+    /* ── Flow steps ── */
+    .steps { list-style: none; margin-top: 16px; }
+    .steps li {
+      display: flex;
+      gap: 12px;
+      align-items: flex-start;
+      font-size: 14px;
+      color: #374151;
+      padding: 7px 0;
+      line-height: 1.5;
+    }
+    .steps li .num {
+      width: 22px;
+      height: 22px;
+      border-radius: 50%;
+      font-size: 11px;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      margin-top: 1px;
+    }
+    .steps.blue .num  { background: #dbeafe; color: #1d4ed8; }
+    .steps.green .num { background: #d1fae5; color: #065f46; }
+
+    /* ── Ege section accent ── */
+    .ege-accent { border-left: 4px solid #6B8E3D; }
+    .koopilot-accent { border-left: 4px solid #4F46E5; }
+
+    /* ── Footer ── */
+    .footer {
+      text-align: center;
+      font-size: 12px;
+      color: #94a3b8;
+      margin-top: 40px;
+      line-height: 1.7;
+    }
+
+    /* ── Divider ── */
+    .divider {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: #94a3b8;
+      margin: 28px 0;
+    }
+    .divider::before, .divider::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: #e2e8f0;
+    }
+
+    @media (max-width: 520px) {
+      .hero { padding: 32px 24px; }
+      .section { padding: 24px 20px; }
+      .cred-table td:first-child { width: 28%; }
+    }
+  </style>
+</head>
+<body>
+<div class="page">
+
+  <!-- ══ HERO ══ -->
+  <div class="hero">
+    <div class="hero-top">
+      <!-- Koopilot logo -->
+      <svg width="56" height="56" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg" style="flex-shrink:0">
+        <defs>
+          <linearGradient id="hg" x1="0" y1="0" x2="48" y2="48" gradientUnits="userSpaceOnUse">
+            <stop offset="0%" stop-color="#2563EB"/>
+            <stop offset="55%" stop-color="#4F46E5"/>
+            <stop offset="100%" stop-color="#0EA5E9"/>
+          </linearGradient>
+          <linearGradient id="hs" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stop-color="#FDE68A"/>
+            <stop offset="100%" stop-color="#F59E0B"/>
+          </linearGradient>
+        </defs>
+        <rect x="2" y="2" width="44" height="44" rx="12" fill="url(#hg)"/>
+        <rect x="2" y="2" width="44" height="44" rx="12" fill="white" fill-opacity="0.06"/>
+        <rect x="11" y="12" width="4.5" height="24" rx="1.2" fill="white"/>
+        <path d="M15.5 24 L27.5 14" stroke="white" stroke-width="4.2" stroke-linecap="round"/>
+        <path d="M15.5 24 L27.5 34" stroke="white" stroke-width="4.2" stroke-linecap="round"/>
+        <path d="M28 14 L35 24 M28 34 L35 24" stroke="white" stroke-opacity="0.55" stroke-width="1.6" stroke-linecap="round"/>
+        <circle cx="28" cy="14" r="2.6" fill="white"/>
+        <circle cx="35" cy="24" r="3.2" fill="white"/>
+        <circle cx="28" cy="34" r="2.6" fill="white"/>
+        <path d="M22 5.5 L23 8.5 L26 9.5 L23 10.5 L22 13.5 L21 10.5 L18 9.5 L21 8.5 Z" fill="url(#hs)"/>
+      </svg>
+      <div>
+        <div class="badge">Demo Erişim Kılavuzu</div>
+        <h1>Koopilot</h1>
+      </div>
+    </div>
+    <p>
+      Aşağıda her iki uygulamaya ait test hesapları ve gezinti önerileri yer almaktadır.
+      Tüm hesaplar canlı veritabanı ile çalışmaktadır; yapılan değişiklikler gerçek zamanlı yansır.
+    </p>
+  </div>
+
+  <!-- ══════════════════════════════════
+       BÖLÜM 1 — EGE ZEYTİNCİLİK
+  ══════════════════════════════════ -->
+  <div class="section ege-accent">
+    <div class="section-header">
+      <!-- Ege logo -->
+      <svg width="44" height="44" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg" style="flex-shrink:0">
+        <defs>
+          <linearGradient id="et" x1="0" y1="0" x2="48" y2="48" gradientUnits="userSpaceOnUse">
+            <stop offset="0%" stop-color="#FAF6EC"/>
+            <stop offset="100%" stop-color="#EFE6CE"/>
+          </linearGradient>
+          <linearGradient id="el" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stop-color="#6B8E3D"/>
+            <stop offset="100%" stop-color="#4A6B26"/>
+          </linearGradient>
+          <radialGradient id="eo" cx="0.5" cy="0.4" r="0.7">
+            <stop offset="0%" stop-color="#5A7A2E"/>
+            <stop offset="100%" stop-color="#2F4715"/>
+          </radialGradient>
+        </defs>
+        <rect x="2" y="2" width="44" height="44" rx="11" fill="url(#et)"/>
+        <rect x="2" y="2" width="44" height="44" rx="11" fill="none" stroke="#D9CDA8" stroke-width="1"/>
+        <path d="M24 11 C 24 18, 24 24, 24 32" stroke="#5A7A2E" stroke-width="1.6" stroke-linecap="round" fill="none"/>
+        <path d="M24 19 C 18 17, 13 19, 12 24 C 17 25, 22 23, 24 19 Z" fill="url(#el)"/>
+        <path d="M14 23 C 18 22, 21 21, 23.5 19.5" stroke="#3E5A1F" stroke-width="0.6" fill="none" stroke-linecap="round"/>
+        <path d="M24 22 C 30 20, 35 22, 36 27 C 31 28, 26 26, 24 22 Z" fill="url(#el)"/>
+        <path d="M34 26 C 30 25, 27 24, 24.5 22.5" stroke="#3E5A1F" stroke-width="0.6" fill="none" stroke-linecap="round"/>
+        <ellipse cx="24" cy="35" rx="5" ry="6.2" fill="url(#eo)"/>
+        <ellipse cx="22.4" cy="33" rx="1.1" ry="1.8" fill="#A8C36E" opacity="0.55"/>
+      </svg>
+      <div>
+        <h2>Ege Zeytincilik Kooperatifi</h2>
+        <div class="sub">Müşteri Alışveriş Sitesi</div>
+      </div>
+    </div>
+
+    <div class="url-bar">
+      <span class="dot"></span>
+      <a href="https://ege.koopilot.site" target="_blank">https://ege.koopilot.site</a>
+      <span class="url-label">Canlı</span>
+    </div>
+
+    <table class="cred-table">
+      <thead>
+        <tr>
+          <th>Hesap Türü</th>
+          <th>E-posta</th>
+          <th>Parola</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Kayıtlı Müşteri <span class="role-tag role-owner">Üye</span></td>
+          <td><span class="pill">ayse@example.com</span></td>
+          <td><span class="pill">sifre123</span></td>
+        </tr>
+        <tr>
+          <td>Misafir <span class="role-tag role-guest">Üye değil</span></td>
+          <td colspan="2" style="color:#64748b; font-size:13px;">Giriş gerektirmez — ürünlere göz atabilir, sepete ekleyebilir.</td>
+        </tr>
+        <tr>
+          <td>Yeni Hesap <span class="role-tag role-guest">Kayıt</span></td>
+          <td colspan="2" style="color:#64748b; font-size:13px;"><a href="https://ege.koopilot.site/kayit" target="_blank" style="color:#6B8E3D;">/kayit</a> sayfasından dilediğiniz bilgilerle kayıt oluşturabilirsiniz.</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div class="divider">Önerilen Test Akışı</div>
+
+    <ol class="steps green">
+      <li><span class="num">1</span> Ana sayfayı inceleyin — hero görseli, ürün vitrin kartları ve marka anlatısı.</li>
+      <li><span class="num">2</span> <strong>Ürünler</strong> sayfasında kategori filtresi ve fiyat sıralamasını deneyin.</li>
+      <li><span class="num">3</span> Bir ürünü sepete ekleyin; sepet simgesinin güncellenmesini gözlemleyin.</li>
+      <li><span class="num">4</span> Sağ alttaki <strong>Ege Asistanı</strong> chatbot'unu açın. Örnek sorular:</li>
+    </ol>
+
+    <div style="margin: 12px 0 0 34px; display:flex; flex-wrap:wrap; gap:8px;">
+      <span style="background:#f0fdf4; border:1px solid #bbf7d0; border-radius:8px; padding:5px 12px; font-size:13px; color:#166534;">Hangi ürün düşük stokta?</span>
+      <span style="background:#f0fdf4; border:1px solid #bbf7d0; border-radius:8px; padding:5px 12px; font-size:13px; color:#166534;">Soğuk sıkım ne demek?</span>
+      <span style="background:#f0fdf4; border:1px solid #bbf7d0; border-radius:8px; padding:5px 12px; font-size:13px; color:#166534;">Kargo kaç günde gelir?</span>
+      <span style="background:#f0fdf4; border:1px solid #bbf7d0; border-radius:8px; padding:5px 12px; font-size:13px; color:#166534;">Siparişimi takip etmek istiyorum</span>
+    </div>
+
+    <div class="info-box" style="margin-top:20px;">
+      <span class="icon">💡</span>
+      <p>Ayşe hesabıyla giriş yaptıktan sonra chatbot <em>"Ayşe için aktif"</em> moduna geçer ve kişiselleştirilmiş yanıtlar verir (ör. geçmiş sipariş sorgusu).</p>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════
+       BÖLÜM 2 — KOOPİLOT DASHBOARD
+  ══════════════════════════════════ -->
+  <div class="section koopilot-accent">
+    <div class="section-header">
+      <svg width="44" height="44" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg" style="flex-shrink:0">
+        <defs>
+          <linearGradient id="kg" x1="0" y1="0" x2="48" y2="48" gradientUnits="userSpaceOnUse">
+            <stop offset="0%" stop-color="#2563EB"/>
+            <stop offset="55%" stop-color="#4F46E5"/>
+            <stop offset="100%" stop-color="#0EA5E9"/>
+          </linearGradient>
+          <linearGradient id="ks" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stop-color="#FDE68A"/>
+            <stop offset="100%" stop-color="#F59E0B"/>
+          </linearGradient>
+        </defs>
+        <rect x="2" y="2" width="44" height="44" rx="12" fill="url(#kg)"/>
+        <rect x="2" y="2" width="44" height="44" rx="12" fill="white" fill-opacity="0.06"/>
+        <rect x="11" y="12" width="4.5" height="24" rx="1.2" fill="white"/>
+        <path d="M15.5 24 L27.5 14" stroke="white" stroke-width="4.2" stroke-linecap="round"/>
+        <path d="M15.5 24 L27.5 34" stroke="white" stroke-width="4.2" stroke-linecap="round"/>
+        <path d="M28 14 L35 24 M28 34 L35 24" stroke="white" stroke-opacity="0.55" stroke-width="1.6" stroke-linecap="round"/>
+        <circle cx="28" cy="14" r="2.6" fill="white"/>
+        <circle cx="35" cy="24" r="3.2" fill="white"/>
+        <circle cx="28" cy="34" r="2.6" fill="white"/>
+        <path d="M22 5.5 L23 8.5 L26 9.5 L23 10.5 L22 13.5 L21 10.5 L18 9.5 L21 8.5 Z" fill="url(#ks)"/>
+      </svg>
+      <div>
+        <h2>Koopilot Operasyon Paneli</h2>
+        <div class="sub">Şirket / Kooperatif Yönetim Arayüzü</div>
+      </div>
+    </div>
+
+    <div class="url-bar">
+      <span class="dot" style="background:#a5b4fc;"></span>
+      <a href="https://koopilot.site" target="_blank">https://koopilot.site</a>
+      <span class="url-label">Canlı</span>
+    </div>
+
+    <table class="cred-table">
+      <thead>
+        <tr>
+          <th>Kullanıcı / Tenant</th>
+          <th>Kullanıcı Adı</th>
+          <th>Parola</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Platform Yöneticisi <span class="role-tag role-admin">Admin</span></td>
+          <td><span class="pill">admin</span></td>
+          <td><span class="pill">deneme123</span></td>
+        </tr>
+        <tr>
+          <td>Ege Zeytincilik <span class="role-tag role-owner">Owner</span></td>
+          <td><span class="pill">ege</span></td>
+          <td><span class="pill">deneme123</span></td>
+        </tr>
+        <tr>
+          <td>Aura Doğal Ürünler <span class="role-tag role-owner">Owner</span></td>
+          <td><span class="pill">aura</span></td>
+          <td><span class="pill">deneme123</span></td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div class="divider">Her Hesapta Ne Görürsünüz?</div>
+
+    <table style="width:100%; border-collapse:collapse; font-size:13px;">
+      <thead>
+        <tr style="text-align:left;">
+          <th style="padding:0 0 10px; color:#94a3b8; font-weight:600; text-transform:uppercase; font-size:11px; letter-spacing:0.06em;">Hesap</th>
+          <th style="padding:0 0 10px; color:#94a3b8; font-weight:600; text-transform:uppercase; font-size:11px; letter-spacing:0.06em;">Erişim Kapsamı</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr style="border-top:1px solid #f1f5f9;">
+          <td style="padding:10px 0; font-weight:600; color:#374151; width:28%;">admin</td>
+          <td style="padding:10px 0; color:#475569;">Tüm tenantların envanter, sipariş ve analizleri; platform geneli AI özeti (Operations Brief); kullanıcı yönetimi.</td>
+        </tr>
+        <tr style="border-top:1px solid #f1f5f9;">
+          <td style="padding:10px 0; font-weight:600; color:#374151;">ege</td>
+          <td style="padding:10px 0; color:#475569;">Sadece Ege Zeytincilik verisi — ürün stok durumu, zeytin yağı sipariş geçmişi, 7 günlük tüketim tahmini, kritik stok uyarıları.</td>
+        </tr>
+        <tr style="border-top:1px solid #f1f5f9;">
+          <td style="padding:10px 0; font-weight:600; color:#374151;">aura</td>
+          <td style="padding:10px 0; color:#475569;">Sadece Aura Doğal Ürünler verisi — aynı panelin Aura ürün kataloğu ve siparişleriyle dolu hali. İki tenant birbirini göremez.</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div class="divider">Önerilen Test Akışı</div>
+
+    <ol class="steps blue">
+      <li><span class="num">1</span> <strong>admin</strong> hesabıyla giriş yapın → <em>Operations Brief</em>'i okuyun (AI tarafından üretilen günlük özet).</li>
+      <li><span class="num">2</span> <strong>Envanter</strong> sekmesine geçin — kritik stok altındaki ürünleri filtreleyin.</li>
+      <li><span class="num">3</span> Herhangi bir ürünü seçin → <strong>Stok Tahmini</strong> kartını inceleyin (7 günlük hareketli ortalama + stok tükenme günü).</li>
+      <li><span class="num">4</span> <strong>Siparişler</strong> sekmesinde durum güncellemesi yapın.</li>
+      <li><span class="num">5</span> Çıkış yapıp <strong>ege</strong> hesabıyla giriş yapın — aynı ekranda yalnızca Ege verilerinin göründüğünü doğrulayın (multi-tenant izolasyonu).</li>
+      <li><span class="num">6</span> <strong>aura</strong> hesabıyla tekrarlayın — tamamen farklı bir ürün ve sipariş seti görürsünüz.</li>
+    </ol>
+
+    <div class="note-box">
+      <span class="icon">ℹ️</span>
+      <p><strong>Multi-tenant izolasyon:</strong> Her tenant yalnızca kendi verisini görür. Aynı API, aynı veritabanı şeması — ancak her sorguda <code>tenant_id</code> filtresi zorunlu tutulur. admin hesabı bu izolasyonu platform genelinden izleyebilir.</p>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════
+       BÖLÜM 3 — API DÖKÜMANTASYONU
+  ══════════════════════════════════ -->
+  <div class="section" style="border-left:4px solid #0EA5E9;">
+    <div class="section-header">
+      <div style="width:44px; height:44px; background:linear-gradient(135deg,#0EA5E9,#6366f1); border-radius:12px; display:flex; align-items:center; justify-content:center; flex-shrink:0;">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <polyline points="16 18 22 12 16 6"></polyline>
+          <polyline points="8 6 2 12 8 18"></polyline>
+        </svg>
+      </div>
+      <div>
+        <h2>Backend API Dökümantasyonu</h2>
+        <div class="sub">FastAPI — interaktif Swagger UI</div>
+      </div>
+    </div>
+
+    <div class="url-bar" style="border-color:#bae6fd;">
+      <span class="dot" style="background:#7dd3fc;"></span>
+      <a href="https://yzta-hackathon-ee2z.onrender.com/docs" target="_blank" style="color:#0369a1;">https://yzta-hackathon-ee2z.onrender.com/docs</a>
+      <span class="url-label">Swagger UI</span>
+    </div>
+
+    <p style="font-size:13px; color:#475569; line-height:1.6; margin-top:4px;">
+      Tüm API endpoint'leri interaktif olarak test edilebilir. Kimlik doğrulama için
+      <strong>Authorize</strong> butonunu kullanın ve <code>x-role</code>, <code>x-tenant-id</code>
+      header'larını ayarlayın. Alternatif olarak <code>/redoc</code> endpoint'i daha okunabilir bir referans sunar.
+    </p>
+  </div>
+
+  <!-- ══ FOOTER ══ -->
+  <div class="footer">
+    <div style="display:flex; justify-content:center; align-items:center; gap:8px; margin-bottom:10px;">
+      <svg width="20" height="20" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <linearGradient id="fg" x1="0" y1="0" x2="48" y2="48" gradientUnits="userSpaceOnUse">
+            <stop offset="0%" stop-color="#2563EB"/>
+            <stop offset="100%" stop-color="#4F46E5"/>
+          </linearGradient>
+        </defs>
+        <rect x="2" y="2" width="44" height="44" rx="12" fill="url(#fg)"/>
+        <rect x="11" y="12" width="4.5" height="24" rx="1.2" fill="white"/>
+        <path d="M15.5 24 L27.5 14" stroke="white" stroke-width="4.2" stroke-linecap="round"/>
+        <path d="M15.5 24 L27.5 34" stroke="white" stroke-width="4.2" stroke-linecap="round"/>
+      </svg>
+      <span style="font-weight:600; color:#475569;">Koopilot</span>
+    </div>
+    Tüm hesaplar canlı sisteme bağlıdır. Girilen sipariş ve stok değişiklikleri kalıcıdır.<br>
+    Test sonrası verileri sıfırlamak gerekirse ekibimizle iletişime geçin.
+  </div>
+
+</div>
+</body>
+</html>

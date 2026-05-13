@@ -51,8 +51,13 @@ export default function HomePage() {
             </div>
           </div>
           <div className="relative">
-            <div className="aspect-square bg-gradient-to-br from-olive-200 via-olive-100 to-cream-100 rounded-3xl flex items-center justify-center text-[16rem] shadow-xl rotate-3 hover:rotate-0 transition-transform duration-700">
-              🫒
+            <div className="aspect-square rounded-3xl overflow-hidden shadow-xl rotate-3 hover:rotate-0 transition-transform duration-700 bg-olive-50">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                src="/products/collection.jpg"
+                alt="Ege Zeytincilik ürün koleksiyonu"
+                className="w-full h-full object-cover"
+              />
             </div>
             <div className="absolute -bottom-6 -left-6 bg-white p-4 rounded-2xl shadow-lg border border-olive-100">
               <div className="text-xs uppercase text-olive-600 font-bold tracking-wider">2024 Hasadı</div>
@@ -107,7 +112,14 @@ export default function HomePage() {
       {/* Story strip */}
       <section className="bg-olive-800 text-white">
         <div className="max-w-6xl mx-auto px-6 py-16 md:py-20 grid md:grid-cols-2 gap-10 items-center">
-          <div className="text-7xl md:text-9xl text-center">🌿</div>
+          <div className="aspect-square rounded-3xl overflow-hidden shadow-2xl bg-olive-900">
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src="/products/bottle-1l.jpg"
+              alt="Ege Zeytincilik şişe"
+              className="w-full h-full object-cover"
+            />
+          </div>
           <div>
             <div className="text-xs uppercase tracking-widest text-olive-200 font-semibold mb-2">Hikayemiz</div>
             <h2 className="font-serif text-3xl md:text-4xl font-bold mb-4">

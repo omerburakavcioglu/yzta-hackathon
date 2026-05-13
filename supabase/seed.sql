@@ -31,16 +31,15 @@ INSERT INTO customers (id, tenant_id, profile_id, full_name, email, phone) VALUE
   ('dddddddd-0000-0000-0000-000000000003', '22222222-0000-0000-0000-000000000002', 'cccccccc-0000-0000-0000-000000000003', 'Elif Yılmaz', 'elif@example.com',   '+90 530 333 33 33'),
   ('dddddddd-0000-0000-0000-000000000004', '22222222-0000-0000-0000-000000000002', 'cccccccc-0000-0000-0000-000000000004', 'Can Arslan',  'can@example.com',    '+90 530 444 44 44');
 
--- ── Products – Ege Olive Oil ──────────────────
--- Prices reflect Turkish retail market levels (2026): premium 1L extra virgin ~400-500 TL,
--- 5L teneke ~1700-1900 TL, cold-pressed 500ml ~250-300 TL, Gemlik salamura ~180-220 TL/kg,
--- olive paste 340g jar ~110-130 TL.
+-- ── Products – Ege Zeytincilik ────────────────
+-- Prices reflect Turkish 2026 retail market levels for premium cooperative olive products.
 INSERT INTO products (id, tenant_id, name, category, stock_quantity, critical_threshold, unit_price) VALUES
-  ('eeeeeeee-1111-0000-0000-000000000001', '11111111-0000-0000-0000-000000000001', 'Erken Hasat Sızma Zeytinyağı 1L',         'Olive Oil', 18,  25, 449.00),
-  ('eeeeeeee-1111-0000-0000-000000000002', '11111111-0000-0000-0000-000000000001', 'Sızma Zeytinyağı 5L Teneke',              'Olive Oil', 40,  15, 1849.00),
-  ('eeeeeeee-1111-0000-0000-000000000003', '11111111-0000-0000-0000-000000000001', 'Soğuk Sıkım Naturel Sızma Zeytinyağı 500ml', 'Olive Oil',  8,  20, 269.00),
-  ('eeeeeeee-1111-0000-0000-000000000004', '11111111-0000-0000-0000-000000000001', 'Marmara Tipi Siyah Zeytin Ezmesi 340g',   'Spreads',   22,  10, 119.00),
-  ('eeeeeeee-1111-0000-0000-000000000005', '11111111-0000-0000-0000-000000000001', 'Gemlik Salamura Siyah Zeytin 1kg',        'Olives',    12,  15, 189.00);
+  ('eeeeeeee-1111-0000-0000-000000000001', '11111111-0000-0000-0000-000000000001', 'Natürel Sızma Zeytinyağı 1L',     'Olive Oil', 18,  25, 350.00),
+  ('eeeeeeee-1111-0000-0000-000000000002', '11111111-0000-0000-0000-000000000001', 'Organik Zeytinyağı 2L',           'Olive Oil',  0,  15, 680.00),
+  ('eeeeeeee-1111-0000-0000-000000000003', '11111111-0000-0000-0000-000000000001', 'Soğuk Sıkım Erken Hasat 500ml',   'Olive Oil',  8,  20, 250.00),
+  ('eeeeeeee-1111-0000-0000-000000000004', '11111111-0000-0000-0000-000000000001', 'Zeytin Ezmesi Sade 200g',         'Spreads',   22,  10,  85.00),
+  ('eeeeeeee-1111-0000-0000-000000000005', '11111111-0000-0000-0000-000000000001', 'Siyah Sele Zeytin 1kg',           'Olives',    12,  15, 195.00),
+  ('eeeeeeee-1111-0000-0000-000000000006', '11111111-0000-0000-0000-000000000001', 'Çizik Yeşil Zeytin 1kg',          'Olives',    18,  10, 180.00);
 
 -- ── Products – Aura Candle ────────────────────
 INSERT INTO products (id, tenant_id, name, category, stock_quantity, critical_threshold, unit_price) VALUES

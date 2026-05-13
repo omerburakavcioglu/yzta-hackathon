@@ -5,7 +5,7 @@ import { useParams, useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { api, Product } from '@/lib/api'
 import { useStore } from '@/lib/store'
-import { TL, visualFor } from '@/lib/format'
+import { TL, visualFor, imageFor } from '@/lib/format'
 import { ShoppingBag, ArrowLeft, Leaf, Truck, ShieldCheck, Minus, Plus } from 'lucide-react'
 
 export default function ProductDetailPage() {
@@ -37,6 +37,7 @@ export default function ProductDetailPage() {
   }
 
   const v = visualFor(product.category)
+  const img = imageFor(product.name)
   const inStock = product.stock_quantity > 0
   const lowStock = inStock && product.stock_quantity <= product.critical_threshold
 
@@ -49,9 +50,16 @@ export default function ProductDetailPage() {
 
       <div className="grid md:grid-cols-2 gap-10">
         {/* Image */}
-        <div className={`aspect-square bg-gradient-to-br ${v.bg} rounded-3xl flex items-center justify-center text-[14rem] shadow-lg`}>
-          {v.emoji}
-        </div>
+        {img ? (
+          <div className="aspect-square rounded-3xl overflow-hidden shadow-lg bg-olive-50">
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img src={img} alt={product.name} className="w-full h-full object-cover" />
+          </div>
+        ) : (
+          <div className={`aspect-square bg-gradient-to-br ${v.bg} rounded-3xl flex items-center justify-center text-[14rem] shadow-lg`}>
+            {v.emoji}
+          </div>
+        )}
 
         {/* Details */}
         <div>

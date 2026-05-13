@@ -6,6 +6,7 @@ import { useRouter } from 'next/navigation'
 import { useStore } from '@/lib/store'
 import { api } from '@/lib/api'
 import { Loader2 } from 'lucide-react'
+import EgeLogo from '@/components/EgeLogo'
 
 export default function LoginPage() {
   const router = useRouter()
@@ -34,7 +35,7 @@ export default function LoginPage() {
   return (
     <div className="max-w-md mx-auto px-6 py-16">
       <div className="text-center mb-8">
-        <div className="text-4xl mb-3">🫒</div>
+        <div className="flex justify-center mb-3"><EgeLogo size={56} /></div>
         <h1 className="font-serif text-3xl text-olive-900 font-bold">Giriş Yap</h1>
         <p className="text-sm text-ink-500 mt-2">Hesabınıza erişin, siparişlerinizi takip edin.</p>
       </div>

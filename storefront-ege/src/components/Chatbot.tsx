@@ -4,6 +4,7 @@ import { useState, useRef, useEffect } from 'react'
 import { useStore } from '@/lib/store'
 import { api } from '@/lib/api'
 import { MessageCircle, X, Send, Loader2, Sparkles } from 'lucide-react'
+import EgeLogo from './EgeLogo'
 
 interface Msg { role: 'user' | 'assistant'; text: string }
 
@@ -83,7 +84,7 @@ export default function Chatbot() {
           <div className="flex-1 overflow-y-auto px-4 py-4 bg-cream-50 space-y-3">
             {messages.length === 0 && (
               <div className="text-center text-sm text-ink-500 py-4">
-                <div className="text-3xl mb-2">🫒</div>
+                <div className="flex justify-center mb-2"><EgeLogo size={44} /></div>
                 <p className="mb-4">Merhaba! Ürünler, siparişler ve teslimat hakkında size yardımcı olabilirim.</p>
                 <div className="space-y-1.5">
                   {SUGGESTIONS.map(s => (

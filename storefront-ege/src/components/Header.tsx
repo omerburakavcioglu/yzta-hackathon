@@ -6,6 +6,7 @@ import { useStore } from '@/lib/store'
 import { ShoppingBag, User, LogOut, Menu, X } from 'lucide-react'
 import { useState } from 'react'
 import clsx from 'clsx'
+import EgeLogo from './EgeLogo'
 
 const NAV = [
   { href: '/',        label: 'Anasayfa' },
@@ -22,8 +23,8 @@ export default function Header() {
     <header className="sticky top-0 z-30 bg-cream-50/95 backdrop-blur border-b border-olive-100">
       <div className="max-w-6xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between">
         {/* Logo */}
-        <Link href="/" className="flex items-center gap-2 group">
-          <span className="text-2xl">🫒</span>
+        <Link href="/" className="flex items-center gap-2.5 group">
+          <EgeLogo size={36} className="transition-transform group-hover:rotate-[-6deg]" />
           <div className="leading-tight">
             <div className="font-serif text-lg text-olive-800 font-bold tracking-tight">
               Ege Zeytinyağı

@@ -1,10 +1,12 @@
+import EgeLogo from './EgeLogo'
+
 export default function Footer() {
   return (
     <footer className="mt-20 border-t border-olive-100 bg-olive-900 text-olive-100">
       <div className="max-w-6xl mx-auto px-6 py-12 grid md:grid-cols-3 gap-8">
         <div>
-          <div className="flex items-center gap-2 mb-3">
-            <span className="text-2xl">🫒</span>
+          <div className="flex items-center gap-2.5 mb-3">
+            <EgeLogo size={36} />
             <div className="font-serif text-lg font-bold">Ege Zeytinyağı Kooperatifi</div>
           </div>
           <p className="text-sm text-olive-200 leading-relaxed">
